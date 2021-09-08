@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "havi-app",
+    "slug": "havi-app",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "havi-app"
+}
