@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import Login from "./components/login";
+import SignUp from "./components/singup";
+
 import {
   ImageBackground,
   StyleSheet,
@@ -8,129 +12,29 @@ import {
   TouchableOpacity,
   Picker,
 } from "react-native";
+import axios from "axios";
 const image = {
   uri: "https://i.pinimg.com/originals/e8/a1/9a/e8a19a5df78a6b017f5e6b60d26c4fc2.jpg",
 };
 
-
-export default class App extends React.Component {
-
-  state = {
-    email: "",
-    password: "",
-  };
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.logo}>Sign Up</Text>
-        <View style={styles.inputView}>
-          <TextInput
-            secureTextEntry
-            style={styles.inputText}
-            placeholder="Name"
-            placeholderTextColor="#003f5c"
-            onChangeText={(text) => this.setState({ name : text })}
-          />
-        </View>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Email"
-            placeholderTextColor="#003f5c"
-            onChangeText={(text) => this.setState({ email: text })}
-          />
-        </View>
-        <View style={styles.inputView}>
-          <TextInput
-            secureTextEntry
-            style={styles.inputText}
-            placeholder="Password"
-            placeholderTextColor="#003f5c"
-            onChangeText={(text) => this.setState({ password: text })}
-          />
-        </View>
-        <View style={styles.inputView}>
-        <TextInput
-            style={styles.inputText}
-            placeholder="Gender (Male/Female)"
-            placeholderTextColor="#003f5c"
-            onChangeText={(text) => this.setState({ gender: text })}
-          />
-        </View>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="DOB(dd-mm-yy)"
-            placeholderTextColor="#003f5c"
-            onChangeText={(text) => this.setState({ dob: text })}
-          />
-        </View>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Phone Number"
-            placeholderTextColor="#003f5c"
-            placeholderTextAlign="Center"
-            onChangeText={(text) => this.setState({ phoneNumber: text })}
-          />
-        </View>
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text style={styles.loginText}>Sign Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.loginText}>Go Back to Login</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+export default function App() {
+  return (
+    <div className="App">
+      <BrowserRouter>
+        <div>
+          <Switch>
+            <Route exact path="/">
+              <Login></Login>
+              <Route path="/login">
+                <Login></Login>
+              </Route>
+              <Route path="/signup">
+                <SignUp></SignUp>
+              </Route>
+            </Route>
+          </Switch>
+        </div>
+      </BrowserRouter>
+    </div>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "grey",
-    alignItems: "center",
-    justifyContent: "center",
-    fontFamily: "Chalkboard S",
-  },
-  logo: {
-    fontWeight: "bold",
-    fontSize: 20,
-    color: "#f6f7f7",
-    marginBottom: 40,
-  },
-  inputView: {
-    width: "80%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 25,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20,
-  },
-  inputText: {
-    height: 50,
-    color: "black",
-    alignItems: "center",
-  },
-  forgot: {
-    color: "white",
-    fontSize: 11,
-  },
-  image: {
-    justifyContent: "center",
-  },
-  loginBtn: {
-    width: "80%",
-    backgroundColor: "#ff7f57",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  loginText: {
-    color: "white",
-  },
-});
