@@ -22,7 +22,14 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [gender, setGender] = useState("none");
-
+  useMemo(() => {
+    if (cookies.get("token")) {
+      history.push({
+        pathname: "/listform",
+      });
+    }
+  }, []);
+  
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Sign Up</Text>

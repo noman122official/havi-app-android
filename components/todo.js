@@ -1,160 +1,125 @@
-import React, { Component } from "react";
+import React, { Component, useState, useMemo } from "react";
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   View,
-  FlatList,
-  AsyncStorage,
-  Button,
   TextInput,
-  Keyboard,
-  Platform
+  TouchableOpacity,
+  FlatList,
+  Button,
 } from "react-native";
+import { add } from "react-native-reanimated";
+import axios from "axios";
+import config from "../config";
+import AsyncStorage from "@react-native-community/async-storage";
 
-const isAndroid = Platform.OS == "android";
-const viewPadding = 10;
-
-export default class TodoList extends Component {
-  state = {
-    tasks: [],
-    text: ""
-  };
-
-  changeTextHandler = text => {
-    this.setState({ text: text });
-  };
-
-  addTask = () => {
-    let notEmpty = this.state.text.trim().length > 0;
-
-    if (notEmpty) {
-      this.setState(
-        prevState => {
-          let { tasks, text } = prevState;
-          return {
-            tasks: tasks.concat({ key: tasks.length, text: text }),
-            text: ""
-          };
-        },
-        () => Tasks.save(this.state.tasks)
-      );
+export default function TodoList({ navigation }) {
+  const [rows, setRows] = useState([]);
+  const [formValue, setFormValue] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  useMemo(async () => {
+    if (!AsyncStorage.getItem("token")) {
+      // // history.push({
+      // //   pathname: "/login",
+      // });
+    } else {
+      console.log("token retrieved");
+      axios
+        .get(`${config.baseUrl}/task`, {
+          headers: {
+            token: await AsyncStorage.getItem("token"),
+          },
+        })
+        .then((data) => {
+          // console.log(data.data);
+          const arrayOfTask = [];
+          data.data.forEach((item) => {
+            arrayOfTask.push({
+              key: item.name,
+            });
+          });
+          setRows(arrayOfTask);
+        })
+        .catch((error) => {
+          setErrorMessage("Something went wrong");
+          console.log(error);
+        });
     }
-  };
+  }, []);
 
-  deleteTask = i => {
-    this.setState(
-      prevState => {
-        let tasks = prevState.tasks.slice();
-
-        tasks.splice(i, 1);
-
-        return { tasks: tasks };
-      },
-      () => Tasks.save(this.state.tasks)
-    );
-  };
-
-  componentDidMount() {
-    Keyboard.addListener(
-      isAndroid ? "keyboardDidShow" : "keyboardWillShow",
-      e => this.setState({ viewMargin: e.endCoordinates.height + viewPadding })
-    );
-
-    Keyboard.addListener(
-      isAndroid ? "keyboardDidHide" : "keyboardWillHide",
-      () => this.setState({ viewMargin: viewPadding })
-    );
-
-    Tasks.all(tasks => this.setState({ tasks: tasks || [] }));
+  function handleFormValue(data) {
+    setFormValue(data);
   }
 
-  render() {
-    return (
-      <View
-        style={[styles.container, { paddingBottom: this.state.viewMargin }]}
-      >
-        <FlatList
-          style={styles.list}
-          data={this.state.tasks}
-          renderItem={({ item, index }) =>
-            <View>
-              <View style={styles.listItemCont}>
-                <Text style={styles.listItem}>
-                  {item.text}
-                </Text>
-                <Button title="X" onPress={() => this.deleteTask(index)} />
-              </View>
-              <View style={styles.hr} />
-            </View>}
-        />
-        <TextInput
-          style={styles.textInput}
-          onChangeText={this.changeTextHandler}
-          onSubmitEditing={this.addTask}
-          value={this.state.text}
-          placeholder="Add Tasks"
-          returnKeyType="done"
-          returnKeyLabel="done"
-        />
-      </View>
-    );
+  async function logout(){
+    await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("name");
+    navigation.navigate('Login');
   }
+
+  async function handleFormSubmit() {
+    const taskData = {
+      name: formValue,
+    };
+    console.log(taskData);
+    axios
+      .post(`${config.baseUrl}/task`, taskData, {
+        headers: {
+          token: await AsyncStorage.getItem("token"),
+        },
+      })
+      .then((data) => {
+        console.log(data.data);
+        setRows([
+          ...rows,
+          {
+            key: data.data.name,
+          },
+        ]);
+        setFormValue("");
+      })
+      .catch((error) => {
+        console.log(error);
+        setErrorMessage("Something went wrong");
+      });
+  }
+
+  const [text, onChangeText] = React.useState("Useless Text");
+  const [number, onChangeNumber] = React.useState(null);
+
+  return (
+    <View>
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        onChangeText={handleFormValue}
+        placeholderTextColor="#003f5c"
+      />
+      <Button title="Add" onPress={handleFormSubmit} />
+      <FlatList
+        data={rows}
+        keyExtractor={(item, index) => String(index)}
+        renderItem={({ item }) => <Text style={styles.item}>{item.key}</Text>}
+      />
+      <Button title="Logout" onPress={logout} />
+    </View>
+  );
 }
 
-let Tasks = {
-  convertToArrayOfObject(tasks, callback) {
-    return callback(
-      tasks ? tasks.split("||").map((task, i) => ({ key: i, text: task })) : []
-    );
-  },
-  convertToStringWithSeparators(tasks) {
-    return tasks.map(task => task.text).join("||");
-  },
-  all(callback) {
-    return AsyncStorage.getItem("TASKS", (err, tasks) =>
-      this.convertToArrayOfObject(tasks, callback)
-    );
-  },
-  save(tasks) {
-    AsyncStorage.setItem("TASKS", this.convertToStringWithSeparators(tasks));
-  }
-};
-
 const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF",
-    padding: viewPadding,
-    paddingTop: 20
+    paddingTop: 22,
   },
-  list: {
-    width: "100%"
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
   },
-  listItem: {
-    paddingTop: 2,
-    paddingBottom: 2,
-    fontSize: 18
-  },
-  hr: {
-    height: 1,
-    backgroundColor: "gray"
-  },
-  listItemCont: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
-  textInput: {
-    height: 40,
-    paddingRight: 10,
-    paddingLeft: 10,
-    borderColor: "gray",
-    borderWidth: isAndroid ? 0 : 1,
-    width: "100%"
-  }
 });
-
-AppRegistry.registerComponent("TodoList", () => TodoList);

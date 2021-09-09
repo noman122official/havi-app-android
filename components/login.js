@@ -4,6 +4,8 @@ import axios from "axios";
 import config from "../config";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {
   StyleSheet,
   Text,
@@ -15,48 +17,54 @@ const image = {
   uri: "https://i.pinimg.com/originals/e8/a1/9a/e8a19a5df78a6b017f5e6b60d26c4fc2.jpg",
 };
 
-export default function Login() {
-//   const [email, setUserName] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [errorMessage, setErrorMessage] = useState(null);
-//   useMemo(() => {
-//     if (cookies.get("token")) {
-//       history.push({
-//         pathname: "/signup",
-//       });
-//     }
-//   }, []);
-//   function handleUserName(e) {
-//     setUserName(e.target.value);
-//   }
-//   function handlePassword(e) {
-//     setPassword(e.target.value);
-//   }
-//   function handleKeyDown(event) {
-//     if (event.key === "Enter") {
-//         handleSubmit();
-//     }
-//   }
+export default function Login({ navigation }) {
+
+  const [email, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  useMemo(async () => {
+    console.log("use memo caled");
+    const token = await AsyncStorage.getItem("token");
+    console.log(token);
+    if(token){
+      navigation.navigate('ToDo');
+    }
+  }, []);
+  function handleUserName(username) {
+    setUserName(username);
+  }
+  function handlePassword(password) {
+    setPassword(password);
+  }
+ 
   
-//   function handleSubmit() {
-//     const loginData = {
-//       email: email,
-//       password: password,
-//     };
-//     axios
-//       .post(`${config.baseUrl}/login`, loginData)
-//       .then((data) => {
-//         setErrorMessage(null);
-//         cookies.set("token", data.data.token);
-//         cookies.set("fullname", data.data.name);
-//         history.push({
-//           pathname: "/signup",
-//         });
-//       })
-//       .catch((error) => {
-//         setErrorMessage(error);
-//       });
-//     }
+  function handleSubmit() {
+    const loginData = {
+      email: email,
+      password: password,
+    };
+    console.debug(loginData);
+    axios
+      .post(`${config.baseUrl}/login`, loginData)
+      .then(async (data) => {
+        console.log(data.data);
+        setErrorMessage(null);
+        await AsyncStorage.setItem(
+          'token',
+          data.data.token
+        )
+        await AsyncStorage.setItem(
+          'fullname',
+          data.data.name
+        )
+        navigation.navigate('ToDo');
+        // {() => navigation.navigate('ToDo')};
+      })
+      .catch((error) => {
+        console.log(error);
+        setErrorMessage(error);
+      });
+    }
 
   return (
     <View style={styles.container}>
@@ -66,7 +74,7 @@ export default function Login() {
           style={styles.inputText}
           placeholder="Email"
           placeholderTextColor="#003f5c"
-          // onChange={handleUserName}
+          onChangeText={handleUserName}
         />
       </View>
       <View style={styles.inputView}>
@@ -75,19 +83,18 @@ export default function Login() {
           style={styles.inputText}
           placeholder="Password"
           placeholderTextColor="#003f5c"
-          // onChange={handlePassword}
-          // onKeyDown={handleKeyDown}
+          onChangeText={handlePassword}
         />
       </View>
       <TouchableOpacity style={styles.loginBtn}>
         <Text 
         style={styles.loginText}
-        onClick= {() => navigation.navigate(SignUp)}
-        
+        onPress = {handleSubmit}
         >LOGIN</Text>
       </TouchableOpacity>
       <TouchableOpacity>
-        <Text style={styles.loginText}>Signup</Text>
+        <Text style={styles.loginText}
+        onPress = {() => navigation.navigate('SignUp')}>Signup</Text>
       </TouchableOpacity>
     </View>
   );
