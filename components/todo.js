@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   Button,
+  Alert,
 } from "react-native";
 import { add } from "react-native-reanimated";
 import axios from "axios";
@@ -51,10 +52,10 @@ export default function TodoList({ navigation }) {
     setFormValue(data);
   }
 
-  async function logout(){
+  async function logout() {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("name");
-    navigation.navigate('Login');
+    navigation.navigate("Login");
   }
 
   async function handleFormSubmit() {
@@ -80,6 +81,9 @@ export default function TodoList({ navigation }) {
       })
       .catch((error) => {
         console.log(error);
+        Alert.alert(   
+          'Something Went Wrong',
+        )
         setErrorMessage("Something went wrong");
       });
   }
@@ -91,7 +95,7 @@ export default function TodoList({ navigation }) {
     <View>
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Enter Your Task"
         onChangeText={handleFormValue}
         placeholderTextColor="#003f5c"
       />
@@ -101,7 +105,13 @@ export default function TodoList({ navigation }) {
         keyExtractor={(item, index) => String(index)}
         renderItem={({ item }) => <Text style={styles.item}>{item.key}</Text>}
       />
-      <Button title="Logout" onPress={logout} />
+      <Button
+        title="Userlist"
+        onPress={() => {
+          navigation.navigate("UserList");
+        }}
+      />
+      <Button title="Logout" color="red" onPress={logout} />
     </View>
   );
 }
@@ -112,6 +122,7 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    textAlign: "center",
   },
   container: {
     flex: 1,

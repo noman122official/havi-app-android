@@ -12,6 +12,8 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  Button,
+  Alert,
 } from "react-native";
 const image = {
   uri: "https://i.pinimg.com/originals/e8/a1/9a/e8a19a5df78a6b017f5e6b60d26c4fc2.jpg",
@@ -61,6 +63,9 @@ export default function Login({ navigation }) {
         // {() => navigation.navigate('ToDo')};
       })
       .catch((error) => {
+        Alert.alert(   
+          'Login Failed',  
+        )
         console.log(error);
         setErrorMessage(error);
       });
@@ -92,6 +97,7 @@ export default function Login({ navigation }) {
         onPress = {handleSubmit}
         >LOGIN</Text>
       </TouchableOpacity>
+
       <TouchableOpacity>
         <Text style={styles.loginText}
         onPress = {() => navigation.navigate('SignUp')}>Signup</Text>
