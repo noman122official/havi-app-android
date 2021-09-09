@@ -25,13 +25,13 @@ export default function App() {
           <Switch>
             <Route exact path="/">
               <Login></Login>
+              </Route>
               <Route path="/login">
                 <Login></Login>
               </Route>
               <Route path="/signup">
                 <SignUp></SignUp>
               </Route>
-            </Route>
           </Switch>
         </div>
       </BrowserRouter>

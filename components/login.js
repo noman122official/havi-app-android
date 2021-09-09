@@ -1,11 +1,9 @@
 import React, { useState, useMemo } from "react";
 import { useHistory } from "react-router-dom";
-import Button from "@material-ui/core/Button";
 import cookies from "js-cookie";
 import axios from "axios";
 import config from "../config";
 import {
-  ImageBackground,
   StyleSheet,
   Text,
   View,

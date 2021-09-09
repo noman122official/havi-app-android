@@ -23,7 +23,6 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [gender, setGender] = useState("none");
-  const history = useHistory();
 
   return (
     <View style={styles.container}>
