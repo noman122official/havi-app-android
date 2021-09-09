@@ -119,13 +119,15 @@ export default function SignUp( {navigation} ) {
         />
       </View>
       <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Gender (Male/Female)"
-          placeholderTextColor="#003f5c"
-          onChangeText={handleGender}
-        />
-      </View>
+      <Picker
+        selectedValue={gender}
+        style={{ height: 50, width: 150 }}
+        onValueChange={(itemValue, itemIndex) => setGender(itemValue)}
+      >
+        <Picker.Item label="Male" value="male" />
+        <Picker.Item label="Female" value="female" />
+      </Picker>
+    </View>
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
