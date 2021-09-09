@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from "react";
-import { useHistory } from "react-router-dom";
 import cookies from "js-cookie";
 import axios from "axios";
 import config from "../config";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   StyleSheet,
   Text,
@@ -15,47 +16,47 @@ const image = {
 };
 
 export default function Login() {
-  const [email, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null);
-  useMemo(() => {
-    if (cookies.get("token")) {
-      history.push({
-        pathname: "/signup",
-      });
-    }
-  }, []);
-  function handleUserName(e) {
-    setUserName(e.target.value);
-  }
-  function handlePassword(e) {
-    setPassword(e.target.value);
-  }
-  function handleKeyDown(event) {
-    if (event.key === "Enter") {
-        handleSubmit();
-    }
-  }
+//   const [email, setUserName] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [errorMessage, setErrorMessage] = useState(null);
+//   useMemo(() => {
+//     if (cookies.get("token")) {
+//       history.push({
+//         pathname: "/signup",
+//       });
+//     }
+//   }, []);
+//   function handleUserName(e) {
+//     setUserName(e.target.value);
+//   }
+//   function handlePassword(e) {
+//     setPassword(e.target.value);
+//   }
+//   function handleKeyDown(event) {
+//     if (event.key === "Enter") {
+//         handleSubmit();
+//     }
+//   }
   
-  function handleSubmit() {
-    const loginData = {
-      email: email,
-      password: password,
-    };
-    axios
-      .post(`${config.baseUrl}/login`, loginData)
-      .then((data) => {
-        setErrorMessage(null);
-        cookies.set("token", data.data.token);
-        cookies.set("fullname", data.data.name);
-        history.push({
-          pathname: "/signup",
-        });
-      })
-      .catch((error) => {
-        setErrorMessage(error);
-      });
-    }
+//   function handleSubmit() {
+//     const loginData = {
+//       email: email,
+//       password: password,
+//     };
+//     axios
+//       .post(`${config.baseUrl}/login`, loginData)
+//       .then((data) => {
+//         setErrorMessage(null);
+//         cookies.set("token", data.data.token);
+//         cookies.set("fullname", data.data.name);
+//         history.push({
+//           pathname: "/signup",
+//         });
+//       })
+//       .catch((error) => {
+//         setErrorMessage(error);
+//       });
+//     }
 
   return (
     <View style={styles.container}>
@@ -65,7 +66,7 @@ export default function Login() {
           style={styles.inputText}
           placeholder="Email"
           placeholderTextColor="#003f5c"
-          onChange={handleUserName}
+          // onChange={handleUserName}
         />
       </View>
       <View style={styles.inputView}>
@@ -74,14 +75,16 @@ export default function Login() {
           style={styles.inputText}
           placeholder="Password"
           placeholderTextColor="#003f5c"
-          onChange={handlePassword}
-          onKeyDown={handleKeyDown}
+          // onChange={handlePassword}
+          // onKeyDown={handleKeyDown}
         />
       </View>
       <TouchableOpacity style={styles.loginBtn}>
         <Text 
         style={styles.loginText}
-        onClick={handleSubmit}>LOGIN</Text>
+        onClick= {() => navigation.navigate(SignUp)}
+        
+        >LOGIN</Text>
       </TouchableOpacity>
       <TouchableOpacity>
         <Text style={styles.loginText}>Signup</Text>

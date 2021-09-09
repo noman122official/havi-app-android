@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Login from "./components/login";
 import SignUp from "./components/singup";
+import Naman from "./components/todo";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 
 import {
   ImageBackground,
@@ -12,29 +15,15 @@ import {
   TouchableOpacity,
   Picker,
 } from "react-native";
-import axios from "axios";
-const image = {
-  uri: "https://i.pinimg.com/originals/e8/a1/9a/e8a19a5df78a6b017f5e6b60d26c4fc2.jpg",
-};
 
+const Stack = createNativeStackNavigator();
 export default function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <div>
-          <Switch>
-            <Route exact path="/">
-              <Login></Login>
-              </Route>
-              <Route path="/login">
-                <Login></Login>
-              </Route>
-              <Route path="/signup">
-                <SignUp></SignUp>
-              </Route>
-          </Switch>
-        </div>
-      </BrowserRouter>
-    </div>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={Login} initial={true}/>
+        <Stack.Screen name="SignUp" component={SignUp} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
