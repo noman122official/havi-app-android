@@ -71,6 +71,7 @@ export default function Login({ navigation }) {
       });
     }
 
+
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Havi-Task-App</Text>

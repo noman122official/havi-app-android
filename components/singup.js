@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo} from "react";
 import {
   ImageBackground,
   StyleSheet,
@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   Picker,
 } from "react-native";
+import config from  "../config";
+import AsyncStorage from "@react-native-community/async-storage";
 import axios from "axios";
 const image = {
   uri: "https://i.pinimg.com/originals/e8/a1/9a/e8a19a5df78a6b017f5e6b60d26c4fc2.jpg",
 };
 
-export default function SignUp() {
+export default function SignUp( {navigation} ) {
   const [email, setEmail] = useState("");
   const [fullname, setFullName] = useState("");
   const [password, setPassword] = useState("");
@@ -22,24 +24,81 @@ export default function SignUp() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [gender, setGender] = useState("none");
-  useMemo(() => {
-    if (cookies.get("token")) {
-      history.push({
-        pathname: "/listform",
-      });
+  useMemo(async () => {
+    console.log("use memo caled");
+    const token = await AsyncStorage.getItem("token");
+    console.log(token);
+    if(token){
+      navigation.navigate('ToDo');
     }
   }, []);
+  function handleEmail(email) {
+    setEmail(email);
+  }
+  function handlePassword(password) {
+    setPassword(password);
+  }
+  function handleDob(dob) {
+    setDob(dob);
+  }
+  function handlePhoneNumber(phoneNumber) {
+    setPhoneNumber(phoneNumber);
+  }
+  function handleFullName(fullname) {
+    setFullName(fullname);
+  }
+  function handleGender(gender) {
+    setGender(gender);
+  }
+
+  function handleSubmit() {
+    console.log(fullname,gender,dob,password,phoneNumber,email)
+    const userData = {
+      fullname: fullname,
+      gender: gender,
+      phoneNumber: phoneNumber,
+      dob: dob,
+      email: email,
+      password: password,
+    };
+    console.log
+    axios
+      .post(`${config.baseUrl}/register`, userData)
+      .then(function (data) {
+        setSuccessMessage("Registration successful");
+        setFullName("");
+        setDob("");
+        setPhoneNumber("");
+        setEmail("");
+        setPassword("");
+        setGender("none");
+        navigation.navigate("Login")
+      })
+      .catch(function (error) {
+        console.log(error.response);
+        const statusCode = error?.response?.status;
+        if (statusCode === 400) {
+          console.log(error.response.data)
+          setErrorMessage(
+            error?.response?.data?.error || "Something went wrong"
+          );
+        } else {
+          setErrorMessage("Something went wrong");
+        }
+      });
+  }
+
+
   
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Sign Up</Text>
       <View style={styles.inputView}>
         <TextInput
-          secureTextEntry
           style={styles.inputText}
           placeholder="Name"
           placeholderTextColor="#003f5c"
-          onChangeText={(text) => this.setState({ name: text })}
+          onChangeText={handleFullName}
         />
       </View>
       <View style={styles.inputView}>
@@ -47,7 +106,7 @@ export default function SignUp() {
           style={styles.inputText}
           placeholder="Email"
           placeholderTextColor="#003f5c"
-          onChangeText={(text) => this.setState({ email: text })}
+          onChangeText={handleEmail}
         />
       </View>
       <View style={styles.inputView}>
@@ -56,7 +115,7 @@ export default function SignUp() {
           style={styles.inputText}
           placeholder="Password"
           placeholderTextColor="#003f5c"
-          onChangeText={(text) => this.setState({ password: text })}
+          onChangeText={handlePassword}
         />
       </View>
       <View style={styles.inputView}>
@@ -64,7 +123,7 @@ export default function SignUp() {
           style={styles.inputText}
           placeholder="Gender (Male/Female)"
           placeholderTextColor="#003f5c"
-          onChangeText={(text) => this.setState({ gender: text })}
+          onChangeText={handleGender}
         />
       </View>
       <View style={styles.inputView}>
@@ -72,7 +131,7 @@ export default function SignUp() {
           style={styles.inputText}
           placeholder="DOB(dd-mm-yy)"
           placeholderTextColor="#003f5c"
-          onChangeText={(text) => this.setState({ dob: text })}
+          onChangeText={handleDob}
         />
       </View>
       <View style={styles.inputView}>
@@ -81,11 +140,12 @@ export default function SignUp() {
           placeholder="Phone Number"
           placeholderTextColor="#003f5c"
           placeholderTextAlign="Center"
-          onChangeText={(text) => this.setState({ phoneNumber: text })}
+          onChangeText={handlePhoneNumber}
         />
       </View>
       <TouchableOpacity style={styles.loginBtn}>
-        <Text style={styles.loginText}>Sign Up</Text>
+        <Text style={styles.loginText}
+        onPress={handleSubmit}>Sign Up</Text>
       </TouchableOpacity>
       <TouchableOpacity>
         <Text style={styles.loginText}>Go Back to Login</Text>
